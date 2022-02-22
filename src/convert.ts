@@ -9,7 +9,6 @@ const cssString = `
     height: 100%;
     padding: 8px;
     border-collapse: collapse;
-    margin-top: 10px;
     font-family: Helvetica;
   }
 
@@ -37,10 +36,6 @@ const cssString = `
 
   .centered {
     text-align: center;
-  }
-
-  .mt-1 {
-    margin-top: 1rem;
   }
 `
 
