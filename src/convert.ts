@@ -9,6 +9,7 @@ const cssString = `
     height: 100%;
     padding: 8px;
     border-collapse: collapse;
+    font-size: 12px;
     font-family: Helvetica;
   }
 
@@ -70,7 +71,7 @@ const blobToBase64 = (blob: Blob) =>
 const drawCanvas = ({ width, height }: { width: string, height: string }) => {
   const canvas = document.createElement("canvas")
   canvas.setAttribute("width", width)
-  canvas.setAttribute("height", `${parseFloat(height) + 30}px`)
+  canvas.setAttribute("height", `${parseFloat(height) + 45}px`)
   return canvas
 }
 
@@ -98,7 +99,7 @@ const clickHandler = async () => {
     tempImg.remove()
 
     const span = document.createElement("span")
-    span.style.fontSize = "9px"
+    span.style.fontSize = "10px"
     span.innerText = row.querySelector("h5")!.innerText
     span.style.fontWeight = "bold"
     const br = document.createElement("br")
@@ -106,7 +107,6 @@ const clickHandler = async () => {
   })
 
   const ims = await Promise.all(images)
-
   const meta = document.querySelector<HTMLMetaElement>("meta[name='convert']")
   if (!meta) { console.error("cannot find correct meta tag for convert api"); return }
 
