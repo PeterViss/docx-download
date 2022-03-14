@@ -1,17 +1,11 @@
 const cssString = `
-  .row {
-    width: 100%;
-    height: 100%;
-  }
-
   table {
     width: 100%;
     height: 100%;
     padding: 8px;
     border-collapse: collapse;
-    font-size: 20px;
+    font-size: 16px;
     font-family: Helvetica;
-    margin-bottom: 20px;
   }
 
   th {
@@ -19,8 +13,7 @@ const cssString = `
   }
 
   td {
-    max-width: 7vw;
-    word-break: break-all;
+    max-width: 8vw;
   }
 
   thead {
@@ -50,17 +43,18 @@ const cssString = `
   }
 `
 
-const createSvg = (originalTable: Element) => {
+const px = (n: number | string) => `${n}px`
+
+const createSvg = (originalTable: HTMLElement) => {
   const table = originalTable.cloneNode(true)
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
 
-  const { width, height } = window.getComputedStyle(originalTable)
-
-  console.log("computedStyle width, height", width, height)
+  let { width, height } = window.getComputedStyle(originalTable)
+  height = px(Math.ceil(parseFloat(height)))
 
   svg.setAttribute("width", width)
-  svg.setAttribute("height", `${parseFloat(height)}px`)
+  svg.setAttribute("height", height)
 
   const style = document.createElement("style")
   style.innerHTML = cssString
@@ -72,6 +66,8 @@ const createSvg = (originalTable: Element) => {
 
   const div = document.createElementNS("http://www.w3.org/1999/xhtml", "div")
   div.setAttribute("xmlns", "http://www.w3.org/1999/xhtml")
+  div.style.width = "100%"
+  div.style.height = "100%"
 
   div.appendChild(table)
   foreignObject.appendChild(div)
@@ -89,26 +85,33 @@ const blobToBase64 = (blob: Blob) =>
 const drawCanvas = ({ width, height }: { width: string, height: string }) => {
   const canvas = document.createElement("canvas")
   canvas.setAttribute("width", width)
-  canvas.setAttribute("height", `${parseFloat(height)}px`)
+  canvas.setAttribute("height", px(Math.ceil(parseFloat(height))))
   return canvas
+}
+
+const createIframe = () => {
+  const iframe = document.body.appendChild(document.createElement("iframe"))
+  iframe.style.width = "100vw"
+  iframe.style.height = "100vw"
+  iframe.style.display = "none"
+  return iframe
 }
 
 const clickHandler = async () => {
   const rows = Array.from(document.querySelectorAll(".row"))
-  const iframe = document.body.appendChild(document.createElement("iframe"))
-  iframe.style.width = "100vw"
-  iframe.style.height = "100vw"
+  const iframe = createIframe()
   const images = rows.map(async (row) => {
     const table = row.querySelector("table")!
+
     const svg = createSvg(table)
     svg.style.display = "none"
     iframe.contentDocument!.body.appendChild(svg)
-    // await new Promise(resolve => { setTimeout(resolve, 1) })
 
     const data = new Blob([svg.outerHTML], {type: "image/svg+xml"})
     const base64Data = await blobToBase64(data) as string
 
     const tempImg = new Image()
+    tempImg.style.display = "none"
     tempImg.src = base64Data
 
     const canvas = drawCanvas(window.getComputedStyle(svg))
@@ -121,7 +124,7 @@ const clickHandler = async () => {
     tempImg.remove()
 
     const span = document.createElement("span")
-    span.style.fontSize = "10px"
+    span.style.fontSize = px(10)
     span.innerText = row.querySelector("h5")!.innerText
     span.style.fontWeight = "bold"
     const br = document.createElement("br")
@@ -147,6 +150,8 @@ const clickHandler = async () => {
   const objectUrl = window.URL.createObjectURL(blob)
   window.location.href = objectUrl
   URL.revokeObjectURL(objectUrl)
+
+  iframe.remove()
 }
 
 export default clickHandler
