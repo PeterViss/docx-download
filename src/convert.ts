@@ -117,7 +117,7 @@ const clickHandler = async () => {
     const canvas = drawCanvas(window.getComputedStyle(svg))
     const ctx = canvas.getContext("2d")!
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    await new Promise(resolve => { tempImg.addEventListener("load", resolve) })
+    await new Promise(resolve => { tempImg.addEventListener("load", resolve, { once: true }) })
     ctx.drawImage(tempImg, 0, 0)
     const targetImg = new Image()
     targetImg.src = canvas.toDataURL()
