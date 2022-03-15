@@ -8,12 +8,16 @@ const cssString = `
     font-family: Helvetica;
   }
 
+  table > tbody > tr > td {
+    padding: 8px;
+  }
+
   th {
     padding: 8px;
   }
 
   td {
-    max-width: 8vw;
+    max-width: 8em;
   }
 
   thead {
@@ -22,16 +26,12 @@ const cssString = `
     color: white;
   }
 
-  table > tbody > tr > td {
-    padding: 8px;
-  }
-
   .border-black {
     border: 1px solid black;
   }
 
   th.width {
-    width: 20vw;
+    width: 20em;
   }
 
   .left {
@@ -40,6 +40,10 @@ const cssString = `
 
   .centered {
     text-align: center;
+  }
+
+  .mt-1 {
+    margin-top: 1rem;
   }
 `
 
@@ -91,8 +95,8 @@ const drawCanvas = ({ width, height }: { width: string, height: string }) => {
 
 const createIframe = () => {
   const iframe = document.body.appendChild(document.createElement("iframe"))
-  iframe.style.width = "100vw"
-  iframe.style.height = "100vw"
+  iframe.style.width = "100em"
+  iframe.style.height = "100em"
   iframe.style.display = "none"
   return iframe
 }
@@ -110,7 +114,7 @@ const clickHandler = async () => {
     const data = new Blob([svg.outerHTML], {type: "image/svg+xml"})
     const base64Data = await blobToBase64(data) as string
 
-    const tempImg = new Image()
+    const tempImg = iframe.contentDocument!.body.appendChild(document.createElement("img"))
     tempImg.style.display = "none"
     tempImg.src = base64Data
 
