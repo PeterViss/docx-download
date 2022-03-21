@@ -1,3 +1,45 @@
+import juice from "juice"
+
+const tableString = `
+  table {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    border-collapse: collapse;
+    font-size: 16px;
+  }
+
+  table > tbody > tr > td {
+    padding: 8px;
+  }
+
+  tr {
+    border: 1px solid black;
+  }
+
+  th {
+    padding: 16px;
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+    font-size: 16px;
+  }
+
+  td {
+    max-width: 8em;
+    border: 1px solid black;
+  }
+
+  thead {
+    background-color: black;
+    padding: 8px;
+    color: white;
+  }
+
+  th.width {
+    width: 20em;
+  }
+`
 const cssString = `
   table {
     width: 100%;
@@ -14,6 +56,8 @@ const cssString = `
 
   th {
     padding: 8px;
+    background-color: black;
+    color: white;
   }
 
   td {
@@ -101,11 +145,16 @@ const createIframe = () => {
   return iframe
 }
 
-const clickHandler = async () => {
+const clickHandler = async (raw?: boolean) => {
   const rows = Array.from(document.querySelectorAll(".row"))
   const iframe = createIframe()
   const images = rows.map(async (row) => {
     const table = row.querySelector("table")!
+    const span = document.createElement("span")
+    span.style.fontSize = px(10)
+    span.innerText = row.querySelector("h5")!.innerText
+    span.style.fontWeight = "bold"
+    const br = document.createElement("br")
 
     const svg = createSvg(table)
     svg.style.display = "none"
@@ -127,12 +176,7 @@ const clickHandler = async () => {
     targetImg.src = canvas.toDataURL()
     tempImg.remove()
 
-    const span = document.createElement("span")
-    span.style.fontSize = px(10)
-    span.innerText = row.querySelector("h5")!.innerText
-    span.style.fontWeight = "bold"
-    const br = document.createElement("br")
-    return [span.outerHTML, targetImg.outerHTML, br.outerHTML].join("")
+    return [span.outerHTML, raw && juice.inlineContent(table.outerHTML, tableString) || targetImg.outerHTML, br.outerHTML].join("")
   })
 
   const ims = await Promise.all(images)
