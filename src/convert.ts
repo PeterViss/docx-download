@@ -184,15 +184,22 @@ const clickHandler = async (raw?: boolean) => {
   if (!meta) { console.error("cannot find correct meta tag for convert api"); return }
 
   const url = meta.content
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({tables: ims.join("")})
-  })
+  let data = undefined
+  for (let step = 0; step < 5; step++) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({tables: ims.join("")})
+    })
 
-  const data = await response.json()
+    if (!response.ok) continue
+
+    data = await response.json()
+    break
+  }
+
   const buff = Buffer.from(data.docx, "base64")
   const blob = new Blob([buff], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })
   const objectUrl = window.URL.createObjectURL(blob)
